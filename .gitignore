@@ -87,3 +87,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# CartoonPy tempfiles
+test/__temp__.*
