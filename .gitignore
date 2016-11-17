@@ -90,3 +90,4 @@ ENV/
 
 # CartoonPy tempfiles
 test/__temp__.*
+test/HelloCP.mp3

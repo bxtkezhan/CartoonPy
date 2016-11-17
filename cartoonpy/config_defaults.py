@@ -39,27 +39,24 @@ FFMPEG_BINARY
     Warning: the 'r' before the path is important, especially on Windows.
 
 
-IMAGEMAGICK_BINARY
-    For linux users, 'convert' should be fine.
-    For Windows users, you must specify the path to the ImageMagick
-    'convert' binary. For instance:
-
-    IMAGEMAGICK_BINARY = r"C:\Program Files\ImageMagick-6.8.8-Q16\convert.exe"
+TTS_TOK_PARAMS
+    For linux users, 'CLIENT_ID' and 'CLIENT_SECRET' can be write in ~/.bashrc
+    For Windows users, you can set it by Windows manage tools
 
 """
 
 import os
 
 FFMPEG_BINARY = os.getenv('FFMPEG_BINARY', 'ffmpeg-imageio')
-# IMAGEMAGICK_BINARY = os.getenv('IMAGEMAGICK_BINARY', 'auto-detect')
 
 TTS_TOK_PARAMS = {
     'client_id': os.getenv('CLIENT_ID'),
     'client_secret': os.getenv('CLIENT_SECRET'),
 }
+
 AUDIO_PARAMS = {
     'lan': 'zh',
-    'cuid': '1234567',
+    'cuid': 'bxtkezhan',
     'ctp': 1,
     'spd': 7,
     'pit': 5,

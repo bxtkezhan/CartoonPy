@@ -29,27 +29,29 @@ def verbose_print(verbose, s):
 def subprocess_call(cmd, verbose=True, errorprint=True):
     """ Executes the given subprocess command."""
 
-    verbose_print(verbose, "\n[CartoonPy] Running:\n>>> "+ " ".join(cmd))
+    verbose_print(verbose, "\n[CartoonPy] Running:\n>>> " + " ".join(cmd))
 
     popen_params = {"stdout": DEVNULL,
                     "stderr": sp.PIPE,
-                    "stdin": DEVNULL}
+                    "stdin": DEVNULL} # yapf: disable
 
     if os.name == "nt":
         popen_params["creationflags"] = 0x08000000
 
     proc = sp.Popen(cmd, **popen_params)
 
-    out, err = proc.communicate() # proc.wait()
+    out, err = proc.communicate()  # proc.wait()
     proc.stderr.close()
 
     if proc.returncode:
-        verbose_print(errorprint, "\n[CartoonPy] This command returned an error !")
+        verbose_print(errorprint,
+                      "\n[CartoonPy] This command returned an error !")
         raise IOError(err.decode('utf8'))
     else:
         verbose_print(verbose, "\n... command successful.\n")
 
     del proc
+
 
 def is_string(obj):
     """ Returns true if s is string or string-like object,
@@ -58,6 +60,7 @@ def is_string(obj):
         return isinstance(obj, basestring)
     except NameError:
         return isinstance(obj, str)
+
 
 def cvsecs(time):
     """ Will convert any time into seconds.
@@ -76,21 +79,20 @@ def cvsecs(time):
             time = time + '.0'
         expr = r"(\d+):(\d+):(\d+)[,|.](\d+)"
         finds = re.findall(expr, time)[0]
-        nums = list( map(float, finds) )
-        return ( 3600*int(finds[0])
-                + 60*int(finds[1])
-                + int(finds[2])
-                + nums[3]/(10**len(finds[3])))
+        nums = list(map(float, finds))
+        return (3600 * int(finds[0]) + 60 * int(finds[1]) + int(finds[2]) +
+                nums[3] / (10**len(finds[3])))
 
     elif isinstance(time, tuple):
-        if len(time)== 3:
+        if len(time) == 3:
             hr, mn, sec = time
-        elif len(time)== 2:
+        elif len(time) == 2:
             hr, mn, sec = 0, time[0], time[1]
-        return 3600*hr + 60*mn + sec
+        return 3600 * hr + 60 * mn + sec
 
     else:
         return time
+
 
 def deprecated_version_of(f, oldname, newname=None):
     """ Indicates that a function is deprecated and has a new name.
@@ -120,17 +122,17 @@ def deprecated_version_of(f, oldname, newname=None):
 
     if newname is None: newname = f.__name__
 
-    warning= ("The function ``%s`` is deprecated and is kept temporarily "
-              "for backwards compatibility.\nPlease use the new name, "
-              "``%s``, instead.")%(oldname, newname)
+    warning = ("The function ``%s`` is deprecated and is kept temporarily "
+               "for backwards compatibility.\nPlease use the new name, "
+               "``%s``, instead.") % (oldname, newname)
 
     def fdepr(*a, **kw):
         warnings.warn("CartoonPy: " + warning, PendingDeprecationWarning)
         return f(*a, **kw)
+
     fdepr.__doc__ = warning
 
     return fdepr
-
 
 # non-exhaustive dictionnary to store default informations.
 # any addition is most welcome.
@@ -147,13 +149,14 @@ extensions_dict = { "mp4":  {'type':'video', 'codec':['libx264','libmpeg4']},
                     'mp3':  {'type':'audio', 'codec':['libmp3lame']},
                     'wav':  {'type':'audio', 'codec':['pcm_s16le', 'pcm_s32le']},
                     'm4a':  {'type':'audio', 'codec':['libfdk_aac']}
-                  }
+                  } # yapf: disable
 
 for ext in ["jpg", "jpeg", "png", "bmp", "tiff"]:
-    extensions_dict[ext] = {'type':'image'}
+    extensions_dict[ext] = {'type': 'image'}
+
 
 def find_extension(codec):
-    for ext,infos in extensions_dict.items():
+    for ext, infos in extensions_dict.items():
         if ('codec' in infos) and codec in infos['codec']:
             return ext
     raise ValueError

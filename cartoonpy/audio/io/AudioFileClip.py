@@ -82,6 +82,22 @@ from cartoonpy.config_defaults import TTS_TOK_PARAMS, AUDIO_PARAMS
 from cartoonpy.audio.io.tts_online import tts, save_sound
 
 class AudioTTSClip(AudioFileClip):
+    """
+    Common Parameters
+    ------------
+    
+    txt
+      Text of the TTS input.
+    
+    filename
+      Filename of the tempfile name.
+
+    tok_params, aud_params
+      Tok params and audio params of the TTS config.
+
+    """
+
+
     def __init__(self, txt, filename='__temp__.mp3',
                  tok_params=TTS_TOK_PARAMS, aud_params=AUDIO_PARAMS,
                  buffersize=200000, nbytes=2, fps=44100):
@@ -90,6 +106,11 @@ class AudioTTSClip(AudioFileClip):
             if sound:
                 save_sound(sound, filename)
                 break
+        else:
+            raise IOError(
+            "TTS error, you can checking the network and try again, "
+            "or reset your TTS config."
+            )
         AudioFileClip.__init__(self, filename, buffersize, nbytes, fps)
 
         self.text = txt

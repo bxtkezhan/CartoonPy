@@ -24,7 +24,7 @@ from .video.io.ImageSequenceClip import ImageSequenceClip
 from .video.io.downloader import download_webfile
 from .video.VideoClip import VideoClip, ImageClip, ColorClip, TextClip
 from .video.compositing.CompositeVideoClip import CompositeVideoClip, clips_array
-from .video.compositing.concatenate import concatenate_videoclips, concatenate # concatenate=deprecated
+from .video.compositing.concatenate import concatenate_videoclips, concatenate  # concatenate=deprecated
 
 from .audio.AudioClip import AudioClip, CompositeAudioClip, concatenate_audioclips
 from .audio.io.AudioFileClip import AudioFileClip, AudioTTSClip
@@ -67,19 +67,19 @@ for method in [
           "vfx.resize",
           "vfx.rotate",
           "vfx.speedx"
-          ]:
+          ]: # yapf: disable
 
-    exec("VideoClip.%s = %s"%( method.split('.')[1], method))
+    exec("VideoClip.%s = %s" % (method.split('.')[1], method))
 
 
-for method in ["afx.audio_fadein",
-               "afx.audio_fadeout",
-               "afx.audio_loop",
-               "afx.volumex"
-              ]:
-              
-    exec("AudioClip.%s = %s"%( method.split('.')[1], method))
+for method in [
+            "afx.audio_fadein",
+            "afx.audio_fadeout",
+            "afx.audio_loop",
+            "afx.volumex"
+            ]:  # yapf: disable
 
+    exec("AudioClip.%s = %s" % (method.split('.')[1], method))
 
 # adds easy ipython integration
 VideoClip.ipython_display = ipython_display
@@ -88,14 +88,15 @@ AudioClip.ipython_display = ipython_display
 # Previews: try to import pygame, else make methods which raise
 # exceptions saying to install PyGame
 
-
 # Add methods preview and show (only if pygame installed)
 try:
     from cartoonpy.video.io.preview import show, preview
 except ImportError:
+
     def preview(self, *args, **kwargs):
         """NOT AVAILABLE : clip.preview requires Pygame installed."""
         raise ImportError("clip.preview requires Pygame installed")
+
     def show(self, *args, **kwargs):
         """NOT AVAILABLE : clip.show requires Pygame installed."""
         raise ImportError("clip.show requires Pygame installed")
@@ -107,8 +108,10 @@ VideoClip.show = show
 try:
     from cartoonpy.audio.io.preview import preview
 except ImportError:
+
     def preview(self, *args, **kwargs):
         """ NOT AVAILABLE : clip.preview requires Pygame installed."""
         raise ImportError("clip.preview requires Pygame installed")
+
 
 AudioClip.preview = preview

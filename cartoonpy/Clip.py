@@ -7,16 +7,13 @@ and AudioClip.
 from copy import copy
 import numpy as np
 
-from cartoonpy.decorators import ( apply_to_mask,
-                                 apply_to_audio,
-                                 requires_duration,
-                                 outplace,
-                                 convert_to_seconds,
-                                 use_clip_fps_by_default)
+from cartoonpy.decorators import (apply_to_mask, apply_to_audio,
+                                  requires_duration, outplace,
+                                  convert_to_seconds, use_clip_fps_by_default)
 from tqdm import tqdm
 
-class Clip:
 
+class Clip:
     """
         
      Base class of all clips (VideoClips and AudioClips).
@@ -38,11 +35,11 @@ class Clip:
        this case their duration will be ``None``.
      
      """
-    
+
     # prefix for all tmeporary video and audio files.
     # You can overwrite it with 
     # >>> Clip._TEMP_FILES_PREFIX = "temp_"
-    
+
     _TEMP_FILES_PREFIX = 'TEMP_MPY_'
 
     def __init__(self):
@@ -50,12 +47,10 @@ class Clip:
         self.start = 0
         self.end = None
         self.duration = None
-        
+
         self.memoize = False
         self.memoized_t = None
-        self.memoize_frame  = None
-
-
+        self.memoize_frame = None
 
     def copy(self):
         """ Shallow copy of the clip. 
@@ -67,15 +62,15 @@ class Clip:
         there is an outplace transformation of the clip (clip.resize,
         clip.subclip, etc.)
         """
-        
+
         newclip = copy(self)
         if hasattr(self, 'audio'):
             newclip.audio = copy(self.audio)
         if hasattr(self, 'mask'):
             newclip.mask = copy(self.mask)
-            
+
         return newclip
-    
+
     @convert_to_seconds(['t'])
     def get_frame(self, t):
         """
@@ -94,7 +89,7 @@ class Clip:
         else:
             return self.make_frame(t)
 
-    def fl(self, fun, apply_to=[] , keep_duration=True):
+    def fl(self, fun, apply_to=[], keep_duration=True):
         """ General processing of a clip.
 
         Returns a new Clip whose frames are a transformation
@@ -134,11 +129,11 @@ class Clip:
 
         #mf = copy(self.make_frame)
         newclip = self.set_make_frame(lambda t: fun(self.get_frame, t))
-        
+
         if not keep_duration:
             newclip.duration = None
             newclip.end = None
-            
+
         if isinstance(apply_to, str):
             apply_to = [apply_to]
 
@@ -146,13 +141,11 @@ class Clip:
             if hasattr(newclip, attr):
                 a = getattr(newclip, attr)
                 if a is not None:
-                    new_a =  a.fl(fun, keep_duration=keep_duration)
+                    new_a = a.fl(fun, keep_duration=keep_duration)
                     setattr(newclip, attr, new_a)
-                    
+
         return newclip
 
-    
-    
     def fl_time(self, t_func, apply_to=[], keep_duration=False):
         """
         Returns a Clip instance playing the content of the current clip
@@ -184,12 +177,11 @@ class Clip:
         >>> newclip = clip.fl_time(lambda: 3-t)
         
         """
-        
-        return self.fl(lambda gf, t: gf(t_func(t)), apply_to,
-                                    keep_duration=keep_duration)
-    
-    
-    
+
+        return self.fl(lambda gf, t: gf(t_func(t)),
+                       apply_to,
+                       keep_duration=keep_duration)
+
     def fx(self, func, *args, **kwargs):
         """
         
@@ -211,11 +203,9 @@ class Clip:
         >>> resize( volumex( mirrorx( clip ), 0.5), 0.3)
         
         """
-        
+
         return func(self, *args, **kwargs)
-            
-    
-    
+
     @apply_to_mask
     @apply_to_audio
     @convert_to_seconds(['t'])
@@ -238,15 +228,13 @@ class Clip:
         These changes are also applied to the ``audio`` and ``mask``
         clips of the current clip, if they exist.
         """
-        
+
         self.start = t
         if (self.duration is not None) and change_end:
             self.end = t + self.duration
         elif (self.end is not None):
             self.duration = self.end - self.start
-    
-    
-    
+
     @apply_to_mask
     @apply_to_audio
     @convert_to_seconds(['t'])
@@ -266,8 +254,6 @@ class Clip:
         else:
             self.duration = self.end - self.start
 
-
-    
     @apply_to_mask
     @apply_to_audio
     @convert_to_seconds(['t'])
@@ -289,9 +275,8 @@ class Clip:
         else:
             if duration is None:
                 raise Exception("Cannot change clip start when new"
-                                 "duration is None")
+                                "duration is None")
             self.start = self.end - t
-
 
     @outplace
     def set_make_frame(self, make_frame):
@@ -304,24 +289,22 @@ class Clip:
     @outplace
     def set_fps(self, fps):
         """ Returns a copy of the clip with a new default fps for functions like
-        write_videofile, iterframe, etc. """ 
+        write_videofile, iterframe, etc. """
         self.fps = fps
-
 
     @outplace
     def set_ismask(self, ismask):
-        """ Says wheter the clip is a mask or not (ismask is a boolean)""" 
+        """ Says wheter the clip is a mask or not (ismask is a boolean)"""
         self.ismask = ismask
 
     @outplace
     def set_memoize(self, memoize):
-        """ Sets wheter the clip should keep the last frame read in memory """ 
-        self.memoize = memoize    
-    
+        """ Sets wheter the clip should keep the last frame read in memory """
+        self.memoize = memoize
+
     @convert_to_seconds(['t'])
     def is_playing(self, t):
         """
-        
         If t is a time, returns true if t is between the start and
         the end of the clip. t can be expressed in seconds (15.35),
         in (min, sec), in (hour, min, sec), or as a string: '01:03:05.35'.
@@ -329,29 +312,27 @@ class Clip:
         theclip, else returns a vector [b_1, b_2, b_3...] where b_i
         is true iff tti is in the clip. 
         """
-        
+
         if isinstance(t, np.ndarray):
             # is the whole list of t outside the clip ?
             tmin, tmax = t.min(), t.max()
-            
-            if (self.end is not None) and (tmin >= self.end) :
+
+            if (self.end is not None) and (tmin >= self.end):
                 return False
-            
+
             if tmax < self.start:
                 return False
-            
+
             # If we arrive here, a part of t falls in the clip
             result = 1 * (t >= self.start)
             if (self.end is not None):
                 result *= (t <= self.end)
             return result
-        
-        else:
-            
-            return( (t >= self.start) and
-                    ((self.end is None) or (t < self.end) ) )
-    
 
+        else:
+
+            return ((t >= self.start) and ((self.end is None) or
+                                           (t < self.end)))
 
     @convert_to_seconds(['t_start', 't_end'])
     @apply_to_mask
@@ -378,37 +359,37 @@ class Clip:
         they exist.
         """
 
-        if (self.duration is not None) and (t_start>self.duration):
-        
-            raise ValueError("t_start (%.02f) "%t_start +
-                             "should be smaller than the clip's "+
-                             "duration (%.02f)."%self.duration)
+        if (self.duration is not None) and (t_start > self.duration):
+
+            raise ValueError("t_start (%.02f) " % t_start +
+                             "should be smaller than the clip's " +
+                             "duration (%.02f)." % self.duration)
 
         newclip = self.fl_time(lambda t: t + t_start, apply_to=[])
 
         if (t_end is None) and (self.duration is not None):
-        
+
             t_end = self.duration
-        
-        elif (t_end is not None) and (t_end<0):
-        
+
+        elif (t_end is not None) and (t_end < 0):
+
             if self.duration is None:
-        
-                print ("Error: subclip with negative times (here %s)"%(str((t_start, t_end)))
-                       +" can only be extracted from clips with a ``duration``")
-        
+
+                print("Error: subclip with negative times (here %s)" % (str((
+                    t_start, t_end))) +
+                      " can only be extracted from clips with a ``duration``")
+
             else:
-        
+
                 t_end = self.duration + t_end
-        
+
         if (t_end is not None):
-        
+
             newclip.duration = t_end - t_start
             newclip.end = newclip.start + newclip.duration
-            
+
         return newclip
 
-    
     @apply_to_mask
     @apply_to_audio
     @convert_to_seconds(['ta', 'tb'])
@@ -425,21 +406,24 @@ class Clip:
         The resulting clip's ``audio`` and ``mask`` will also be cutout
         if they exist.
         """
-        
-        fl = lambda t: t + (t >= ta)*(tb - ta)
+
+        fl = lambda t: t + (t >= ta) * (tb - ta)
         newclip = self.fl_time(fl)
-        
+
         if self.duration is not None:
-        
+
             return newclip.set_duration(self.duration - (tb - ta))
-        
+
         else:
-        
+
             return newclip
 
     @requires_duration
     @use_clip_fps_by_default
-    def iter_frames(self, fps=None, with_times = False, progress_bar=False,
+    def iter_frames(self,
+                    fps=None,
+                    with_times=False,
+                    progress_bar=False,
                     dtype=None):
         """ Iterates over all the frames of the clip.
         
@@ -467,26 +451,26 @@ class Clip:
         """
 
         def generator():
-        
-            for t in np.arange(0, self.duration, 1.0/fps):
-        
+
+            for t in np.arange(0, self.duration, 1.0 / fps):
+
                 frame = self.get_frame(t)
-        
+
                 if (dtype is not None) and (frame.dtype != dtype):
-        
+
                     frame = frame.astype(dtype)
 
                 if with_times:
-        
+
                     yield t, frame
-        
+
                 else:
-        
+
                     yield frame
-        
+
         if progress_bar:
-        
-            nframes = int(self.duration*fps)+1
+
+            nframes = int(self.duration * fps) + 1
             return tqdm(generator(), total=nframes)
 
         return generator()
