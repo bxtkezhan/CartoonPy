@@ -89,8 +89,8 @@ def concatenate_videoclips(clips, method="chain", transition=None,
                      if (c.mask is not None)
                      else ColorClip( [1, 1], col=1, ismask=True, duration=c.duration)
                      for c in clips] # yapf: disable
-            result.mask = concatenate_videoclips(
-                masks, method="chain", ismask=True)
+            result.mask = concatenate_videoclips(masks,
+                                                 method="chain", ismask=True) # yapf: disable
             result.clips = clips
 
     elif method == "compose":

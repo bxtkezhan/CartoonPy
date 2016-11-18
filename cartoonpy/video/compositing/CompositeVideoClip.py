@@ -94,8 +94,8 @@ class CompositeVideoClip(VideoClip):
                           else c.add_mask().mask).set_pos(c.pos)
                          for c in self.clips]
 
-            self.mask = CompositeVideoClip(
-                maskclips, self.size, ismask=True, bg_color=0.0)
+            self.mask = CompositeVideoClip(maskclips, self.size,
+                                           ismask=True, bg_color=0.0) # yapf: disable
 
         def make_frame(t):
             """ The clips playing at time `t` are blitted over one
