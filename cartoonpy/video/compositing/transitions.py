@@ -9,6 +9,7 @@ from .CompositeVideoClip import CompositeVideoClip
 from cartoonpy.video.fx.fadein import fadein
 from cartoonpy.video.fx.fadeout import fadeout
 
+
 @add_mask_if_none
 def crossfadein(clip, duration):
     """ Makes the clip appear progressively, over ``duration`` seconds.
@@ -28,8 +29,6 @@ def crossfadeout(clip, duration):
     newclip = clip.copy()
     newclip.mask = clip.mask.fx(fadeout, duration)
     return newclip
-
-
 
 
 def slide_in(clip, duration, side):
@@ -61,14 +60,13 @@ def slide_in(clip, duration, side):
     >>> final_clip = concatenate( slided_clips, padding=-1)
 
     """
-    w,h = clip.size
+    w, h = clip.size
     pos_dict = {'left' : lambda t: (min(0,w*(t/duration-1)),'center'),
                 'right' : lambda t: (max(0,w*(1-t/duration)),'center'),
                 'top' : lambda t: ('center',min(0,h*(t/duration-1))),
-                'bottom': lambda t: ('center',max(0,h*(1-t/duration)))}
-    
-    return clip.set_pos( pos_dict[side] )
+                'bottom': lambda t: ('center',max(0,h*(1-t/duration)))} # yapf: disable
 
+    return clip.set_pos(pos_dict[side])
 
 
 @requires_duration
@@ -102,29 +100,21 @@ def slide_out(clip, duration, side):
 
     """
 
-    w,h = clip.size
-    t_s = clip.duration - duration # start time of the effect.
+    w, h = clip.size
+    t_s = clip.duration - duration  # start time of the effect.
     pos_dict = {'left' : lambda t: (min(0,w*(1-(t-ts)/duration)),'center'),
                 'right' : lambda t: (max(0,w*((t-ts)/duration-1)),'center'),
                 'top' : lambda t: ('center',min(0,h*(1-(t-ts)/duration))),
-                'bottom': lambda t: ('center',max(0,h*((t-ts)/duration-1))) }
-    
-    return clip.set_pos( pos_dict[side] )
+                'bottom': lambda t: ('center',max(0,h*((t-ts)/duration-1)))} # yapf: disable
 
-
-
-
-
-
-
-
+    return clip.set_pos(pos_dict[side])
 
 
 @requires_duration
 def make_loopable(clip, cross_duration):
     """ Makes the clip fade in progressively at its own end, this way
     it can be looped indefinitely. ``cross`` is the duration in seconds
-    of the fade-in.  """  
+    of the fade-in.  """
     d = clip.duration
     clip2 = clip.fx(crossfadein, cross_duration).\
                  set_start(d - cross_duration)

@@ -76,10 +76,13 @@ def preprocess_args(fun, varnames):
     """ Applies fun to variables in varnames before launching the function """
 
     def wrapper(f, *a, **kw):
+        """ MPOCode.
         if hasattr(f, "func_code"):
             func_code = f.func_code  # Python 2
         else:
             func_code = f.__code__  # Python 3
+        """
+        func_code = f.__code__ 
 
         names = func_code.co_varnames
         new_a = [
@@ -122,10 +125,13 @@ def use_clip_fps_by_default(f, clip, *a, **k):
                     " provide e.g. fps=24 in the arguments of the function, or define"
                     " the clip's fps with `clip.fps=24`" % f.__name__)
 
+    """ MPOCode.
     if hasattr(f, "func_code"):
         func_code = f.func_code  # Python 2
     else:
         func_code = f.__code__  # Python 3
+    """
+    func_code = f.__code__
 
     names = func_code.co_varnames[1:]
 

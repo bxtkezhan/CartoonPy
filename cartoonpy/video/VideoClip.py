@@ -32,10 +32,13 @@ from ..decorators import (apply_to_mask, requires_duration, outplace,
                           add_mask_if_none, convert_to_seconds,
                           convert_masks_to_RGB, use_clip_fps_by_default)
 
+""" MPOCode.
 try:
     from subprocess import DEVNULL  # py3k
 except ImportError:
     DEVNULL = open(os.devnull, 'wb')
+"""
+from subprocess import DEVNULL
 
 
 class VideoClip(Clip):

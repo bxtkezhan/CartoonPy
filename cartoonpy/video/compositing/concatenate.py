@@ -5,10 +5,10 @@ from cartoonpy.video.VideoClip import VideoClip, ColorClip
 from cartoonpy.video.compositing.CompositeVideoClip import CompositeVideoClip
 from cartoonpy.audio.AudioClip import CompositeAudioClip
 
-from cartoonpy.video.compositing.on_color import on_color 
+from cartoonpy.video.compositing.on_color import on_color
 
 def concatenate_videoclips(clips, method="chain", transition=None,
-                           bg_color=None, ismask=False, padding = 0):
+                           bg_color=None, ismask=False, padding = 0): # yapf: disable
     """ Concatenates several video clips
     
     Returns a video clip made by clip by concatenating several video clips.
@@ -67,52 +67,55 @@ def concatenate_videoclips(clips, method="chain", transition=None,
         clips = reduce(lambda x, y: x + y, l) + [clips[-1]]
         transition = None
 
-    
     tt = np.cumsum([0] + [c.duration for c in clips])
 
     sizes = [v.size for v in clips]
 
-
     w = max([r[0] for r in sizes])
     h = max([r[1] for r in sizes])
 
-    tt = np.maximum(0, tt + padding*np.arange(len(tt)))
-    
+    tt = np.maximum(0, tt + padding * np.arange(len(tt)))
+
     if method == "chain":
+
         def make_frame(t):
             i = max([i for i, e in enumerate(tt) if e <= t])
             return clips[i].get_frame(t - tt[i])
-        
-        result = VideoClip(ismask = ismask, make_frame = make_frame)
+
+        result = VideoClip(ismask=ismask, make_frame=make_frame)
         if any([c.mask is not None for c in clips]):
-            masks = [c.mask if (c.mask is not None) else
-                     ColorClip([1,1], col=1, ismask=True, duration=c.duration)
-                 #ColorClip(c.size, col=1, ismask=True).set_duration(c.duration)
-                     for c in clips]
-            result.mask = concatenate_videoclips(masks, method="chain", ismask=True)
+            masks = [
+                c.mask if (c.mask is not None) else ColorClip(
+                    [1, 1], col=1, ismask=True, duration=c.duration)
+                #ColorClip(c.size, col=1, ismask=True).set_duration(c.duration)
+                for c in clips
+            ]
+            result.mask = concatenate_videoclips(
+                masks, method="chain", ismask=True)
             result.clips = clips
 
-
     elif method == "compose":
-        result = CompositeVideoClip( [c.set_start(t).set_pos('center')
-                                for (c, t) in zip(clips, tt)],
-               size = (w, h), bg_color=bg_color, ismask=ismask)
+        result = CompositeVideoClip(
+            [c.set_start(t).set_pos('center') for (c, t) in zip(clips, tt)],
+            size=(w, h),
+            bg_color=bg_color,
+            ismask=ismask)
 
     result.tt = tt
-    
-    result.start_times = tt[:-1]
-    result.start, result.duration, result.end = 0, tt[-1] , tt[-1]
-    
-    audio_t = [(c.audio,t) for c,t in zip(clips,tt) if c.audio is not None]
-    if len(audio_t)>0:
-        result.audio = CompositeAudioClip([a.set_start(t)
-                                for a,t in audio_t])
 
-    fps_list = list(set([c.fps for c in clips if hasattr(c,'fps')]))
-    if len(fps_list)==1:
-        result.fps= fps_list[0]
+    result.start_times = tt[:-1]
+    result.start, result.duration, result.end = 0, tt[-1], tt[-1]
+
+    audio_t = [(c.audio, t) for c, t in zip(clips, tt) if c.audio is not None]
+    if len(audio_t) > 0:
+        result.audio = CompositeAudioClip([a.set_start(t) for a, t in audio_t])
+
+    fps_list = list(set([c.fps for c in clips if hasattr(c, 'fps')]))
+    if len(fps_list) == 1:
+        result.fps = fps_list[0]
 
     return result
 
 
-concatenate = deprecated_version_of(concatenate_videoclips, "concatenate_videoclips")
+concatenate = deprecated_version_of(concatenate_videoclips,
+                                    "concatenate_videoclips")

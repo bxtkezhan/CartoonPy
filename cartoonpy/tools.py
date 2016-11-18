@@ -8,10 +8,13 @@ import warnings
 import re
 
 import os
+""" MPOCode.
 try:
     from subprocess import DEVNULL  # py3k
 except ImportError:
     DEVNULL = open(os.devnull, 'wb')
+"""
+from subprocess import DEVNULL
 
 
 def sys_write_flush(s):

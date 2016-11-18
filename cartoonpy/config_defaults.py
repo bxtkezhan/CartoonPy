@@ -50,8 +50,8 @@ import os
 FFMPEG_BINARY = os.getenv('FFMPEG_BINARY', 'ffmpeg-imageio')
 
 TTS_TOK_PARAMS = {
-    'client_id': os.getenv('CLIENT_ID'),
-    'client_secret': os.getenv('CLIENT_SECRET'),
+    'client_id': os.getenv('TTS_CLIENT_ID'),
+    'client_secret': os.getenv('TTS_CLIENT_SECRET'),
 }
 
 AUDIO_PARAMS = {
