@@ -91,8 +91,8 @@ class CompositeVideoClip(VideoClip):
         # compute mask if necessary
         if transparent:
             maskclips = [(c.mask if (c.mask is not None)
-                          else c.add_mask().mask).set_pos(c.pos)
-                         for c in self.clips]
+                         else c.add_mask().mask).set_pos(c.pos)
+                         for c in self.clips] # yapf: disable
 
             self.mask = CompositeVideoClip(maskclips, self.size,
                                            ismask=True, bg_color=0.0) # yapf: disable
