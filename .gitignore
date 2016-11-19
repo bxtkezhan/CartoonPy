@@ -91,3 +91,6 @@ ENV/
 # CartoonPy tempfiles
 test/__temp__.*
 test/HelloCP.mp3
+
+# CopyF Shell
+copyf.sh
