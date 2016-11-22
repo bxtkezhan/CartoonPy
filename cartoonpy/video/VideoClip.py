@@ -573,9 +573,14 @@ class VideoClip(Clip):
 
         # is the position relative (given in % of the clip's size) ?
         if self.relative_pos:
-            for i, dim in enumerate(wf, hf):
-                if not isinstance(pos[i], str):
-                    pos[i] = dim * pos[i]
+            # OMPCode.
+            # for i, dim in enumerate(wf, hf):
+            #     if not isinstance(pos[i], str):
+            #         pos[i] = dim * pos[i]
+            if not isinstance(pos[0], str):
+               pos[0] *= wf
+            if not isinstance(pos[0], str):
+               pos[1] *= hf
 
         if isinstance(pos[0], str):
             D = {'left': 0, 'center': (wf - wi) / 2, 'right': wf - wi}
