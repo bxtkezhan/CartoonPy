@@ -17,10 +17,11 @@ from cartoonpy.config import get_setting  # ffmpeg, ffmpeg.exe, etc...
 from cartoonpy.tools import cvsecs
 
 import os
-try:
-    from subprocess import DEVNULL  # py3k
-except ImportError:
-    DEVNULL = open(os.devnull, 'wb')
+# try:
+#     from subprocess import DEVNULL  # py3k
+# except ImportError:
+#     DEVNULL = open(os.devnull, 'wb')
+from subprocess import DEVNULL  # py3k
 
 
 class FFMPEG_VideoReader:
