@@ -7,10 +7,7 @@ import subprocess as sp
 import os
 import numpy as np
 
-try:
-    from subprocess import DEVNULL  # py3k
-except ImportError:
-    DEVNULL = open(os.devnull, 'wb')
+from subprocess import DEVNULL  # py3k
 
 from cartoonpy.config import get_setting
 from cartoonpy.tools import verbose_print

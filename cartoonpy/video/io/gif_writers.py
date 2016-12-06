@@ -6,10 +6,7 @@ from cartoonpy.decorators import (requires_duration,use_clip_fps_by_default)
 from cartoonpy.tools import verbose_print, subprocess_call
 import numpy as np
 
-try:
-    from subprocess import DEVNULL  # py3k
-except ImportError:
-    DEVNULL = open(os.devnull, 'wb')
+from subprocess import DEVNULL  # py3k
 
 try:
   import imageio
