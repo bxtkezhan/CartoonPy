@@ -8,10 +8,7 @@ from cartoonpy.video.io.ffmpeg_reader import ffmpeg_parse_infos
 from cartoonpy.config import get_setting
 
 import os
-try:
-    from subprocess import DEVNULL  # py3k
-except ImportError:
-    DEVNULL = open(os.devnull, 'wb')
+from subprocess import DEVNULL  # py3k
 
 
 class FFMPEG_AudioReader:
