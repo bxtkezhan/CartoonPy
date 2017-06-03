@@ -89,7 +89,7 @@ class Clip:
         else:
             return self.make_frame(t)
 
-    def fl(self, fun, apply_to=[], keep_duration=True):
+    def fl(self, fun, apply_to=None, keep_duration=True):
         """ General processing of a clip.
 
         Returns a new Clip whose frames are a transformation
@@ -126,6 +126,8 @@ class Clip:
         >>> newclip = clip.fl(fl, apply_to='mask')
         
         """
+        if apply_to is None:
+            apply_to = []
 
         #mf = copy(self.make_frame)
         newclip = self.set_make_frame(lambda t: fun(self.get_frame, t))
@@ -177,6 +179,8 @@ class Clip:
         >>> newclip = clip.fl_time(lambda: 3-t)
         
         """
+        if apply_to is None:
+            apply_to = []
 
         return self.fl(lambda gf, t: gf(t_func(t)),
                        apply_to,
@@ -328,9 +332,7 @@ class Clip:
             if (self.end is not None):
                 result *= (t <= self.end)
             return result
-
         else:
-
             return ((t >= self.start) and ((self.end is None) or
                                            (t < self.end)))
 
@@ -358,9 +360,10 @@ class Clip:
         subclips of ``mask`` and ``audio`` the original clip, if
         they exist.
         """
+        if t_start < 0:
+            t_start = self.duration + t_start
 
         if (self.duration is not None) and (t_start > self.duration):
-
             raise ValueError("t_start (%.02f) " % t_start +
                              "should be smaller than the clip's " +
                              "duration (%.02f)." % self.duration)
@@ -368,23 +371,17 @@ class Clip:
         newclip = self.fl_time(lambda t: t + t_start, apply_to=[])
 
         if (t_end is None) and (self.duration is not None):
-
             t_end = self.duration
 
         elif (t_end is not None) and (t_end < 0):
-
             if self.duration is None:
-
                 print("Error: subclip with negative times (here %s)" % (str((
                     t_start, t_end))) +
                       " can only be extracted from clips with a ``duration``")
-
             else:
-
                 t_end = self.duration + t_end
 
         if (t_end is not None):
-
             newclip.duration = t_end - t_start
             newclip.end = newclip.start + newclip.duration
 
@@ -411,19 +408,13 @@ class Clip:
         newclip = self.fl_time(fl)
 
         if self.duration is not None:
-
             return newclip.set_duration(self.duration - (tb - ta))
-
         else:
-
             return newclip
 
     @requires_duration
     @use_clip_fps_by_default
-    def iter_frames(self,
-                    fps=None,
-                    with_times=False,
-                    progress_bar=False,
+    def iter_frames(self, fps=None, with_times=False, progress_bar=False,
                     dtype=None):
         """ Iterates over all the frames of the clip.
         
@@ -451,25 +442,16 @@ class Clip:
         """
 
         def generator():
-
             for t in np.arange(0, self.duration, 1.0 / fps):
-
                 frame = self.get_frame(t)
-
                 if (dtype is not None) and (frame.dtype != dtype):
-
                     frame = frame.astype(dtype)
-
                 if with_times:
-
                     yield t, frame
-
                 else:
-
                     yield frame
 
         if progress_bar:
-
             nframes = int(self.duration * fps) + 1
             return tqdm(generator(), total=nframes)
 
