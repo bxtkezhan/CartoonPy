@@ -148,7 +148,7 @@ class Clip:
 
         return newclip
 
-    def fl_time(self, t_func, apply_to=[], keep_duration=False):
+    def fl_time(self, t_func, apply_to=None, keep_duration=False):
         """
         Returns a Clip instance playing the content of the current clip
         but with a modified timeline, time ``t`` being replaced by another
